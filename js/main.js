@@ -1,9 +1,10 @@
 if (!$.support.transition)
   $.fn.transition = $.fn.animate;
-
-var $lb = $('.login-box');
-var docHeight = Math.floor( $(document).height() / 2 );
-var lfHeight = Math.floor( $lb.height() );
+$lb = $('.login-box');
+$lbf = $('.login-box-fade');
+$lbs = $('.login-box-slide');
+var docHeight = Math.floor( $(document).outerHeight(true) / 2 );
+var lfHeight = Math.floor( $lb.outerHeight(true) );
 var transHeight = docHeight-lfHeight;
 
 $('.start-anim-fade').on('click', function(e){
@@ -15,39 +16,55 @@ $('.start-anim-slide').on('click', function(e){
 	slideInLoginForm();			
 	return false;
 });
+$('.js-login-form').on('keyup', function(e){
+	$username = $(this).find('#username').val();
+	$password = $(this).find('#password').val();
+	if (($username != '') && ($password != '')) {
+		$('.login-btn').fadeIn();
+	}else{
+		$('.login-btn').fadeOut();
+	}
+	e.preventDefault();
+});
 
+$('.login-btn').on('click', function(){
+	$('.animated').fadeIn();
+});
 function slideInLoginForm()
 {
-	
-}
-
-function fadeInLoginForm()
-{
-	if(checkFormStatus())
+	if(checkFormStatus($lbs))
 	{
-		$lb.find('.login-form').fadeOut(function(){
-			$lb.transit({
+		$('.login-form.login-form-slide input[type=password]').transit({
+			x:'0px'
+		})
+		$('.login-form.login-form-slide input[type=text]').transit({
+			x:'0px'
+		}, function(){
+			$lbs.transit({
 				top:0,
 				y: '-250px'
 			})
-			.fadeOut()
-			.data('active', false);
+			.data('active', false);	
 		});
 	}
-	else 
+	else
 	{
-		$lb.show(function(){
+		$lbs.show(function(){
 			$(this).transit({
 				top:'auto',
 				y: transHeight
 			}, function(){
-				$(this).find('.login-form').fadeIn();
+				$('.login-form.login-form-slide input[type=password]').transit({
+					x:'190px'
+				})
+				$('.login-form.login-form-slide input[type=text]').transit({
+					x:'-190px'
+				})
 			});		
 		}).data('active', true);
 	}
 }
-
-function checkFormStatus()
+function checkFormStatus(form)
 {
-	return $lb.data('active');
+	return form.data('active');
 }
